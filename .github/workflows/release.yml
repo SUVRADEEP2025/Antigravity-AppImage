@@ -6,16 +6,21 @@ on:
   push:
     branches:
       - "main"
-
+env:
+  METADATA_URL: https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/linux-x64/stable/latest
+  APP_UPDATE_NEEDED: true
+  APP_SHORT_NAME: Antigravity
+  APP_NAME: Antigravity Ide
+  APP_VERSION: jq -r '.productVersion' <<< "$(curl -fsSL "$METADATA_URL")" 
+  
 jobs:
   version:
     name: AntiGravity AppImage
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      METADATA_URL: https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/linux-x64/stable/latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@main
       - name: Install build dependencies
         run: |
           sudo apt-get update
@@ -50,7 +55,7 @@ jobs:
           version_icon: 'code.png'
       - name: Upload artifact
         if: ${{ env.APP_UPDATE_NEEDED == 'true' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@main
         with:
           name: ${{ env.APP_SHORT_NAME }}.AppImage
           path: 'dist'
